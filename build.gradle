@@ -46,13 +46,14 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.webjars:materializecss:1.0.0'
     compile 'org.webjars:jquery:3.4.1'
+    compile 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.4.1'
     compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
 /**Test**/
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.springframework.security:spring-security-test'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+    testCompile 'com.jayway.jsonpath:json-path'
 }
 
 test {

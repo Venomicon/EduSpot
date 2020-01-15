@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initialscale=1, maximum-scale=1.0, user-scalable=no" />
+        <title>Domyślny tytuł</title>
+        <link href="/webjars/materializecss/1.0.0/css/materialize.css"
+              type="text/css" rel="stylesheet" media="screen,projection" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body>
+        <ul id="lang-dropdown" class="dropdown-content">
+            <li><a href="?lang=pl">Polski</a></li>
+            <li><a href="?lang=en">English</a></li>
+        </ul>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper indigo">
+                    <ul class="left">
+                        <li>
+                            <a class="btn indigo waves-effect waves-light" sec:authorize="!isAuthenticated()" th:href="@{/login}" th:text="#{loginPage.login}"></a>
+                            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                                <button type="submit" class="btn indigo waves-effect waves-light" th:text="#{logout}" style="margin-left: 10px"/>
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="center">
+                        <li>
+                            <a class="brand-logo center" href="/">
+                                <img src="https://i.imgur.com/inCeX75.png" height="40">
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="right">
+                        <li>
+                            <a class="dropdown-trigger btn indigo" href="#!" data-target="lang-dropdown" th:text="#{language}">
+                                <i class="mdi-action-language right"></i>Język</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            Jesteś zalogowany jako <b sec:authentication="name"></b> z rolami <span sec:authentication="authorities"></span>
+            <form th:action="@{/logout}" method="post" style="display: inline-block">
+                <input type="submit" value="Wyloguj"/>
+            </form>
+            <hr/>
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                Jesteś administratorem
+            </div>
+        </div>
+
+
+
+        <section layout:fragment="content">
+            <p>Zawartość strony</p>
+        </section>
+
+
+
+
+        <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+        <script src="/webjars/materializecss/1.0.0/js/materialize.js"></script>
+        <script type="text/javascript">
+            $('.dropdown-trigger').dropdown();
+        </script>
+    </body>
+</html>
