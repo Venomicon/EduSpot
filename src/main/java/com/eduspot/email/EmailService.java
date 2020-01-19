@@ -33,21 +33,25 @@ public class EmailService {
         this.userService = userService;
     }
 
-    //@Scheduled
-    public void scheduleReminders() throws Exception {
+    @Scheduled(cron = "0 0 0 ? * MON")
+    public void scheduleReminders() {
         List<User> users = userService.findAllUsers();
         for (User user : users) {
             if (!user.getCarriedCourses().isEmpty() || !user.getTakenCourses().isEmpty()) {
-                sendReminderEmails(new Mail(
-                        user.getCredentials().getEmail(),
-                        SUBJECT,
-                        mailCreatorService.buildCoursesReminderEmail(user)
-                ));
+                try {
+                    sendReminderEmail(new Mail(
+                            user.getCredentials().getEmail(),
+                            SUBJECT,
+                            mailCreatorService.buildCoursesReminderEmail(user)
+                    ));
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
             }
         }
     }
 
-    public void sendReminderEmails(final Mail mail) {
+    public void sendReminderEmail(final Mail mail) {
         int mailCounter = 0;
         try {
             javaMailSender.send(createReminderMessage(mail));

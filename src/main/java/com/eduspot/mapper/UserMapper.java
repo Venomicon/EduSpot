@@ -35,7 +35,7 @@ public class UserMapper {
                 .birthDate(userDto.getBirthDate())
                 .build();
         try {
-            user.setCredentials(credentialsService.findById(userDto.getUserId()));
+            user.setCredentials(credentialsService.findById(userDto.getCredentialsId()));
             List<Course> carriedCourses = new ArrayList<>();
             for (Long id : userDto.getCarriedCourseIds()) {
                 Course carried = courseService.findCourseById(id);

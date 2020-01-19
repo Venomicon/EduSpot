@@ -16,6 +16,7 @@
             <li><a href="?lang=pl">Polski</a></li>
             <li><a href="?lang=en">English</a></li>
         </ul>
+        <!--STATIC NAVBAR-->
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper indigo">
@@ -43,16 +44,22 @@
                 </div>
             </nav>
         </div>
-
-        <div sec:authorize="isAuthenticated()">
-            Jesteś zalogowany jako <b sec:authentication="name"></b> z rolami <span sec:authentication="authorities"></span>
-            <form th:action="@{/logout}" method="post" style="display: inline-block">
-                <input type="submit" value="Wyloguj"/>
-            </form>
-            <hr/>
-            <div sec:authorize="hasRole('ROLE_ADMIN')">
-                Jesteś administratorem
-            </div>
+        <!--USER NAVBAR-->
+        <div class="navbar" sec:authorize="isAuthenticated()">
+            <nav>
+                <div class="nav-wrapper orange">
+                    <ul>
+                        <li>
+                            <a class="btn orange waves-effect waves-light" th:href="@{/browse}" th:text="#{browse}"></a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <a class="btn orange waves-light waves-effect" th:href="@{/profile}" th:text="#{profile}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
 
 

@@ -4,12 +4,16 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -22,7 +26,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long courseId;
 
-    @NotEmpty
+    @NotNull
     @Size(min = 3, max = 30)
     private String title;
 
@@ -33,25 +37,43 @@ public class Course {
     @JoinColumn
     private User teacher;
 
-    @NotEmpty
+    @NotNull
     private String level;
 
     //!!!!!!!!!!!!!!!!!!!!!!  CONFIGURE MANY TO MANY
     @ManyToMany
     @JoinTable
-    private List<User> students;
+    @Builder.Default
+    private List<User> students = new ArrayList<>();
 
-    @NotEmpty
+    @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime startTime;
 
-    @NotEmpty
+    @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Future
     private LocalDate startDate;
 
-    @NotEmpty
+    @NotNull
+    @Min(value = 1)
+    @Max(value = 52)
     private Integer weeks;
 
-    @NotEmpty
-    private DayOfWeek dayOfWeek;
+    private String dayOfWeek;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return title.equals(course.title) &&
+                teacher.equals(course.teacher) &&
+                level.equals(course.level);
+    }
+
+    public void getDayOfClasses() {
+        DayOfWeek dayOfWeek = startDate.getDayOfWeek();
+        setDayOfWeek(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+    }
 }

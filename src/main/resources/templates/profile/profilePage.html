@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title th:text="#{profile}">Profile</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body layout:fragment="content">
+<nav class="nav-extended red">
+    <div class="nav-content">
+        <ul class="tabs tabs-fixed-width tabs-transparent">
+            <li class="tab"><a class="active" href="#teacher" th:text="#{teacher}">Teacher</a></li>
+            <li class="tab"><a href="#student" th:text="#{student}">Student</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div id="teacher" class="col s12">
+    <div class="row">
+        <h2 class="red-text center" th:text="#{yourCourses}">Your courses</h2>
+        <form class="right" method="get" th:action="@{/course/new}">
+            <button class="btn red" type="submit" name="newCourse" th:text="#{newCourse}" style="margin-right: 20px"></button>
+        </form>
+    </div>
+    <div class="row">
+        <ul class="collection">
+            <li class="collection-item avatar" th:each="course : ${yourCarriedCourses}">
+                <ul class="left">
+                    <span class="title red-text" ><b th:text="${course.getTitle()}"></b></span>
+                    <p class="red-text lighten-1" th:text="${course.getDescription()}"></p>
+                </ul>
+                <ul class="right">
+                    <form class="right" method="get" th:action="@{'/course/' + ${course.getCourseId()}}">
+                        <button class="btn red waves-effect" type="submit" style="margin-top: 10px">INFO</button>
+                    </form>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="student" class="col s12">
+    <div class="row">
+        <h2 class="orange-text center" th:text="#{yourCourses}">Your courses</h2>
+    </div>
+    <br>
+    <div class="row">
+        <ul class="collection">
+            <li class="collection-item avatar" th:each="course : ${yourTakenCourses}">
+                <ul class="left">
+                    <span class="title orange-text" ><b th:text="${course.getTitle()}"></b></span>
+                    <p class="orange-text lighten-1" th:text="${course.getDescription()}"></p>
+                </ul>
+                <ul class="right">
+                    <button class="btn white orange-text waves-effect" style="margin-top: 10px">INFO</button>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="/webjars/jquery/3.4.1/jquery.js"></script>
+<script src="/webjars/materializecss/1.0.0/js/materialize.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.tabs').tabs();
+    });
+</script>
+</body>
+</html>

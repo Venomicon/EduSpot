@@ -5,6 +5,8 @@ import com.eduspot.exception.UserAlreadyExistException;
 import com.eduspot.exception.UserNotFoundException;
 import com.eduspot.mapper.UserMapper;
 import com.eduspot.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +25,8 @@ import javax.validation.Valid;
 
 @Controller
 public class SignupController {
+    public static final Logger LOGGER = LoggerFactory.getLogger(SignupController.class);
+
     private UserService userService;
     private AuthenticationManager authenticationManager;
 
@@ -37,17 +41,17 @@ public class SignupController {
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signupUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, HttpServletRequest request) throws Exception {
+    public String signupUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "signupPage";
         }
-        userService.doesExistInDatabase(user);
-        userService.signupUser(user);
         try {
+            userService.signupUser(user);
             request.login(user.getCredentials().getUsername(), user.getCredentials().getPassword());
-        } catch (ServletException e) {
-            throw new ServletException(e.getMessage());
+            return "redirect:/success";
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return "signupPage";
         }
-        return "redirect:/";
     }
 }

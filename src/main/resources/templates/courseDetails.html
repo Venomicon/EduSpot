@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head lang="en">
+    <title th:text="#{browse}">Browse</title>
+</head>
+<body>
+<div class="row" layout:fragment="content">
+    <h2 class="orange-text center" th:text="'Course details for ' + ${courseId} ">Available courses</h2>
+
+</div>
+</body>
+</html>

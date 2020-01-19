@@ -1,7 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<title>Browse courses</title>
-<body>
-<h1>BROWSE COURSES</h1>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head lang="en">
+    <title th:text="#{browse}">Browse</title>
+</head>
+<body layout:fragment="content">
+<div class="row">
+    <h2 class="orange-text center" th:text="#{availableCourses}">Available courses</h2>
+    <ul class="collection">
+        <li class="collection-item avatar" th:each="course : ${availableCourses}">
+            <ul class="left">
+                <span class="title orange-text" ><b th:text="${course.getTitle()}"></b></span>
+                <p class="orange-text lighten-1" th:text="${course.getDescription()}"></p>
+            </ul>
+            <ul class="right">
+                <form class="right" method="get" th:action="@{'/course/' + ${course.getCourseId()}}">
+                    <button class="btn orange waves-effect" type="submit" style="margin-top: 10px">INFO</button>
+                </form>
+            </ul>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

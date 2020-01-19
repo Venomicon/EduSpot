@@ -26,6 +26,6 @@ public class CourseDto {
     private LocalTime startTime;
     private LocalDate startDate;
     private Integer weeks;
-    private DayOfWeek dayOfWeek;
+    private String dayOfWeek;
 }
 

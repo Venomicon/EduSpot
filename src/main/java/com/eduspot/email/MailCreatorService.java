@@ -14,12 +14,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class MailCreatorService {
-    @Qualifier("templateEngine")
     private TemplateEngine templateEngine;
     private CourseService courseService;
 
     @Autowired
-    public MailCreatorService(TemplateEngine templateEngine, CourseService courseService) {
+    public MailCreatorService(@Qualifier("templateEngine") TemplateEngine templateEngine, CourseService courseService) {
         this.templateEngine = templateEngine;
         this.courseService = courseService;
     }
