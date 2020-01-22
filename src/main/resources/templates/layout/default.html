@@ -58,6 +58,11 @@
                             <a class="btn orange waves-light waves-effect" th:href="@{/profile}" th:text="#{profile}"></a>
                         </li>
                     </ul>
+                    <ul sec:authorize="hasRole('ROLE_ADMIN')">
+                        <li class="right">
+                            <a class="btn orange waves-light waves-effect" th:href="@{/admin}" th:text="#{adminPanel}"></a>
+                        </li>
+                    </ul>
                 </div>
             </nav>
         </div>

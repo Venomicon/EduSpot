@@ -24,5 +24,6 @@ public class UserDto {
     @Builder.Default
     private List<Long> takenCourseIds = new ArrayList<>();
 
-
+    @Builder.Default
+    private List<Long> postIds = new ArrayList<>();
 }

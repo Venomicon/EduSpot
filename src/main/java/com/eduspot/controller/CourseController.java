@@ -1,100 +1,105 @@
 package com.eduspot.controller;
 
 import com.eduspot.domain.Course;
-import com.eduspot.domain.CourseDto;
+import com.eduspot.domain.Post;
+import com.eduspot.domain.User;
 import com.eduspot.exception.CourseNotFoundException;
-import com.eduspot.mapper.CourseMapper;
-import com.eduspot.repository.CourseRepository;
-import com.eduspot.repository.CredentialsRepository;
+import com.eduspot.exception.UnableToPostException;
 import com.eduspot.service.CourseService;
+import com.eduspot.service.PostService;
 import com.eduspot.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class CourseController {
     public static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
 
-    @Autowired
-    private CourseMapper courseMapper;
-    @Autowired
     private CourseService courseService;
-    @Autowired
     private UserService userService;
+    private PostService postService;
 
-    @ModelAttribute("loggedUser")
-    public com.eduspot.domain.User getUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(username);
-        try {
-            return userService.findUserByUsername(username);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return null;
-        }
+    @Autowired
+    public CourseController(CourseService courseService, UserService userService, PostService postService) {
+        this.courseService = courseService;
+        this.userService = userService;
+        this.postService = postService;
     }
 
+    @ModelAttribute("loggedUser")
+    public com.eduspot.domain.User getUser() throws UsernameNotFoundException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.findUserByUsername(username);
+    }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/course/{courseId}")
-    public void addCourseToTaken(@PathVariable Long courseId) {
-        try {
-            Course course = courseService.findCourseById(courseId);
-            User userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = userDetails.getUsername();
-            com.eduspot.domain.User user = userService.findUserByUsername(username);
-            course.getStudents().add(user);
-            user.getTakenCourses().add(course);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    @RequestMapping(method = RequestMethod.GET, value = "/course/add/{courseId}")
+    public String addCourseToTaken(@PathVariable Long courseId) throws Exception {
+        Course course = courseService.findCourseById(courseId);
+        courseService.addCourseToTaken(course);
+        return "redirect:/success";
     }
 
     @RequestMapping(value = "/course/new")
     public String createCourseInitial(Course course) {
-        return "createCoursePage";
+        return "course/createCoursePage";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/course/new")
-    public String createCourse(@ModelAttribute("course") @Valid Course course, BindingResult bindingResult) {
+    public String createCourse(@ModelAttribute("course") @Valid Course course, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
-            return "createCoursePage";
+            return "course/createCoursePage";
         }
-        try {
-            course.setTeacher(getUser());
-            courseService.saveCourse(course);
-            return "redirect:/success";
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return "createCoursePage";
-        }
+        course.setTeacher(getUser());
+        courseService.createCourse(course);
+        return "redirect:/created";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/course/{courseId}")
-    public String getCourse(@PathVariable Long courseId) throws CourseNotFoundException {
-        ModelAndView modelAndView = new ModelAndView("courseDetails");
+    public ModelAndView getCourse(@PathVariable Long courseId, Post post) throws CourseNotFoundException {
+        ModelAndView modelAndView = new ModelAndView("course/courseDetails");
         Course course = courseService.findCourseById(courseId);
+        List<User> students = course.getStudents();
+        List<Post> posts = course.sortPostsByCreationTime();
         modelAndView.addObject("course", course);
-        return "courseDetails";
+        modelAndView.addObject("students", students);
+        modelAndView.addObject("posts", posts);
+        return modelAndView;
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/course/{courseId}")
+    @RequestMapping(method = RequestMethod.POST, value = "/course/{courseId}/post")
+    public String addPost(@PathVariable Long courseId, @ModelAttribute("post") Post post) throws Exception {
+        Course course = courseService.findCourseById(courseId);
+        User logged = getUser();
+        if (course.getStudents().contains(logged) || course.getTeacher().equals(logged)) {
+            postService.savePostinDatabase(post, course, logged);
+            return "redirect:/success";
+        } else {
+            throw new UnableToPostException("Only students and teachers are able to post messages");
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/course/{courseId}/post/delete")
+    public String deletePost(@PathVariable Long courseId, Long postId) throws Exception {
+        Course course = courseService.findCourseById(courseId);
+        User logged = getUser();
+        postService.deletePostById(postId, course, logged);
+        return "redirect:/success";
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/course/{courseId}/delete")
     public String deleteCourse(@PathVariable Long courseId) throws CourseNotFoundException {
         courseService.deleteCourseById(courseId);
-        return "redirect:/layout/success";
+        return "redirect:/created";
     }
 }

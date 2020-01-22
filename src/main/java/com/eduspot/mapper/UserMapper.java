@@ -1,10 +1,12 @@
 package com.eduspot.mapper;
 
 import com.eduspot.domain.Course;
+import com.eduspot.domain.Post;
 import com.eduspot.domain.User;
 import com.eduspot.domain.UserDto;
 import com.eduspot.service.CourseService;
 import com.eduspot.service.CredentialsService;
+import com.eduspot.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class UserMapper {
 
     CredentialsService credentialsService;
     CourseService courseService;
+
+    @Autowired
+    PostService postService;
 
     @Autowired
     public UserMapper(CredentialsService credentialsService, CourseService courseService) {
@@ -48,6 +53,12 @@ public class UserMapper {
                 takenCourses.add(taken);
             }
             user.setTakenCourses(takenCourses);
+            List<Post> posts = new ArrayList<>();
+            for (Long id : userDto.getPostIds()) {
+                Post post = postService.findPostById(id);
+                posts.add(post);
+            }
+            user.setPosts(posts);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -67,6 +78,9 @@ public class UserMapper {
                 .collect(Collectors.toList()));
         userDto.setTakenCourseIds(user.getTakenCourses().stream()
                 .map(Course::getCourseId)
+                .collect(Collectors.toList()));
+        userDto.setPostIds(user.getPosts().stream()
+                .map(Post::getPostId)
                 .collect(Collectors.toList()));
         return userDto;
     }

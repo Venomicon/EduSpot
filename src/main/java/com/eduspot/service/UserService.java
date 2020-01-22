@@ -41,9 +41,11 @@ public class UserService {
     public User signupUser(User user) throws UserAlreadyExistException {
         if (!isExist(user)) {
             credentialsRepository.save(user.getCredentials());
-            return userRepository.save(user);
+            User saved = userRepository.save(user);
+            LOGGER.info("Successfully saved user in a database");
+            return saved;
         } else {
-            throw new UserAlreadyExistException("User with these credentials already exists.");
+            throw new UserAlreadyExistException("User with these credentials already exists");
         }
     }
 
@@ -52,11 +54,11 @@ public class UserService {
         if (user.isPresent()) {
             return user.get();
         } else {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("User not found --- userId: " + userId);
         }
     }
 
-    public User updateUser(User user) throws UserNotFoundException {
+    /*public User updateUser(User user) throws UserNotFoundException {
         Optional<User> userOptional = userRepository.findById(user.getUserId());
         if (userOptional.isPresent()) {
             User inDatabase = userOptional.get();
@@ -69,7 +71,7 @@ public class UserService {
         } else {
             throw new UserNotFoundException("User not found");
         }
-    }
+    }*/
 
     public User findUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Credentials> userCredentials = credentialsRepository.findByUsername(username);

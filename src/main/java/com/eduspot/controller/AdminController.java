@@ -48,13 +48,8 @@ public class AdminController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/users/{userId}")
-    public UserDto getUser(@PathVariable Long userId) {
-        try {
-            return userMapper.mapToUserDto(userService.findUserById(userId));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new UserDto();
-        }
+    public UserDto getUser(@PathVariable Long userId) throws UserNotFoundException {
+        return userMapper.mapToUserDto(userService.findUserById(userId));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/courses")
@@ -68,12 +63,7 @@ public class AdminController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/credentials/{userId}")
-    public CredentialsDto getUserCredentials(@PathVariable Long userId) {
-        try {
-            return credentialsMapper.mapToCredentialsDto(userService.findUserById(userId).getCredentials());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return new CredentialsDto();
-        }
+    public CredentialsDto getUserCredentials(@PathVariable Long userId) throws UserNotFoundException {
+        return credentialsMapper.mapToCredentialsDto(userService.findUserById(userId).getCredentials());
     }
 }

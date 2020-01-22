@@ -42,4 +42,8 @@ public class MailCreatorService {
 
         return templateEngine.process("mail/courseReminder", context);
     }
+
+    /*public String buildInformationAfterDeleting(User user) throws Exception {
+
+    }*/
 }

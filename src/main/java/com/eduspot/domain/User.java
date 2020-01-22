@@ -48,4 +48,7 @@ public class User {
     @Builder.Default
     private List<Course> takenCourses = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Post> posts = new ArrayList<>();
 }

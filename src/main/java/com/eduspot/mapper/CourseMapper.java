@@ -1,10 +1,8 @@
 package com.eduspot.mapper;
 
-import com.eduspot.domain.Course;
-import com.eduspot.domain.CourseDto;
-import com.eduspot.domain.User;
-import com.eduspot.domain.UserDto;
+import com.eduspot.domain.*;
 import com.eduspot.exception.UserNotFoundException;
+import com.eduspot.service.PostService;
 import com.eduspot.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +18,12 @@ public class CourseMapper {
     private static Logger LOGGER = LoggerFactory.getLogger(CourseMapper.class);
 
     UserService userService;
+    PostService postService;
 
     @Autowired
-    public CourseMapper(UserService userService) {
+    public CourseMapper(UserService userService, PostService postService) {
         this.userService = userService;
+        this.postService = postService;
     }
 
     public Course mapToCourse(CourseDto courseDto) {
@@ -45,7 +45,13 @@ public class CourseMapper {
                 students.add(student);
             }
             course.setStudents(students);
-        } catch (UserNotFoundException e) {
+            List<Post> posts = new ArrayList<>();
+            for (Long id : courseDto.getPostIds()) {
+                Post post = postService.findPostById(id);
+                posts.add(post);
+            }
+            course.setPosts(posts);
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         return course;
@@ -65,6 +71,9 @@ public class CourseMapper {
                 .build();
         courseDto.setStudentIds(course.getStudents().stream()
                 .map(User::getUserId)
+                .collect(Collectors.toList()));
+        courseDto.setPostIds(course.getPosts().stream()
+                .map(Post::getPostId)
                 .collect(Collectors.toList()));
         return courseDto;
     }

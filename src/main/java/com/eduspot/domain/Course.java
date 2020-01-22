@@ -10,10 +10,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Getter
 @Setter
@@ -21,6 +18,10 @@ import java.util.Locale;
 @AllArgsConstructor
 @Builder
 @Entity(name = "COURSES")
+
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "Course.searchByString", query = "SELECT * FROM courses WHERE title LIKE :search OR description LIKE :search", resultClass = Course.class)
+})
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -62,6 +63,10 @@ public class Course {
 
     private String dayOfWeek;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Post> posts = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,8 +77,21 @@ public class Course {
                 level.equals(course.level);
     }
 
-    public void getDayOfClasses() {
+    public String getDayOfClasses() {
         DayOfWeek dayOfWeek = startDate.getDayOfWeek();
         setDayOfWeek(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        return this.dayOfWeek;
+    }
+
+    public String timeAndDayToString() {
+        String dayOfWeek = getDayOfClasses();
+        String time = startTime.getHour() + ":" + startTime.getMinute();
+        return dayOfWeek + ", " + time;
+    }
+
+    public List<Post> sortPostsByCreationTime() {
+        List<Post> posts = this.getPosts();
+        posts.sort(Post.PostCreationTimeComparator);
+        return posts;
     }
 }

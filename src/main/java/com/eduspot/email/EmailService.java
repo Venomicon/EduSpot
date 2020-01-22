@@ -57,9 +57,17 @@ public class EmailService {
             javaMailSender.send(createReminderMessage(mail));
             mailCounter += 1;
         } catch (MailException e) {
-            LOGGER.error("Failed to process email sending: ", e.getMessage(), e);
+            LOGGER.error("Failed to process email sending: " + e.getMessage(), e);
         }
         LOGGER.info("Successfully sent " + mailCounter + " reminders.");
+    }
+
+    public void sendDeleteInformationEmail(final Mail mail) {
+        try {
+            javaMailSender.send(createDeleteInformationMessage(mail));
+        } catch (MailException e) {
+            LOGGER.error("Failed to process email sending: " + e.getMessage(), e);
+        }
     }
 
     private MimeMessagePreparator createReminderMessage(final Mail mail) {
@@ -71,5 +79,12 @@ public class EmailService {
         };
     }
 
-
+    public MimeMessagePreparator createDeleteInformationMessage(final Mail mail) {
+        return mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setTo(mail.getMailTo());
+            messageHelper.setSubject(mail.getSubject());
+            messageHelper.setText(mail.getMessage(), true);
+        };
+    }
 }

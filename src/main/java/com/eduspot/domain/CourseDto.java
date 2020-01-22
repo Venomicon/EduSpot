@@ -23,6 +23,9 @@ public class CourseDto {
     @Builder.Default
     private List<Long> studentIds = new ArrayList<>();
 
+    @Builder.Default
+    private List<Long> postIds = new ArrayList<>();
+
     private LocalTime startTime;
     private LocalDate startDate;
     private Integer weeks;

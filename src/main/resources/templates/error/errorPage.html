@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head lang="en">
+    <title>Error</title>
+</head>
+<body layout:fragment="content">
+<div class="container">
+    <div class="row">
+        <h2 class="orange-text center" th:text="'STATUS ' + ${#response.getStatus()}"></h2>
+        <br>
+        <!--/*@thymesVar id="message" type="com.eduspot.exception.ExceptionHandlerController"*/-->
+        <h5 class="black-text center" th:text="${message}"></h5>
+    </div>
+    <div class="row center">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <button class="btn-large orange" onclick="goBack()" th:text="#{back}"></button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function goBack() {
+        window.history.back()
+    }
+</script>
+</body>
+</html>

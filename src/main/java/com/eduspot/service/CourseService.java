@@ -2,6 +2,7 @@ package com.eduspot.service;
 
 import com.eduspot.domain.Course;
 import com.eduspot.domain.User;
+import com.eduspot.exception.AddingCourseException;
 import com.eduspot.exception.CourseAlreadyExistsException;
 import com.eduspot.exception.CourseNotFoundException;
 import com.eduspot.exception.UserNotFoundException;
@@ -9,9 +10,9 @@ import com.eduspot.repository.CourseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,17 +39,12 @@ public class CourseService {
         return false;
     }
 
-    public Course createCourse(Course course) throws CourseAlreadyExistsException {
+    public Course createCourse(Course course) throws Exception {
         if (!isExist(course)) {
-            try {
-                List<Course> teacherCourses = this.findAllCoursesCarriedByUser(course.getTeacher().getUserId());
-                Course createdCourse = courseRepository.save(course);
-                teacherCourses.add(createdCourse);
-                return createdCourse;
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-                return null;
-            }
+            User teacher = userService.findUserById(course.getTeacher().getUserId());
+            course.getDayOfClasses();
+            teacher.getCarriedCourses().add(course);
+            return courseRepository.save(course);
         } else {
             throw new CourseAlreadyExistsException("Specified course already exists.");
         }
@@ -64,15 +60,6 @@ public class CourseService {
 
     public List<Course> findAllCoursesCarriedByUser(Long userId) throws UserNotFoundException {
         return userService.findUserById(userId).getCarriedCourses();
-    }
-
-    public List<Course> findAllCarriedByUsername(String username) {
-        List<Course> courses = userService.findUserByUsername(username).getCarriedCourses();
-        if (!courses.isEmpty()) {
-            return courses;
-        } else {
-            return new ArrayList<>();
-        }
     }
 
     public Course findCourseById(Long courseId) throws CourseNotFoundException {
@@ -92,7 +79,7 @@ public class CourseService {
             List<User> students = course.getStudents();
             for (User student : students) {
                 student.getTakenCourses().remove(course);
-                //SEND INFORMATION EMAIL???
+                //SEND INFORMATION EMAIL
             }
             List<Course> teacherCourses = course.getTeacher().getCarriedCourses();
             teacherCourses.remove(course);
@@ -106,5 +93,28 @@ public class CourseService {
         course.getDayOfClasses();
         teacher.getCarriedCourses().add(course);
         return courseRepository.save(course);
+    }
+
+    public void addCourseToTaken(Course course) throws Exception {
+        Optional<Course> courseOptional = courseRepository.findById(course.getCourseId());
+        if (courseOptional.isPresent()) {
+            org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            User user = userService.findUserByUsername(username);
+            List<Course> takenCourses = user.getTakenCourses();
+            if (!course.getTeacher().equals(user)) {
+                if (!takenCourses.contains(course)) {
+                    course.getStudents().add(user);
+                    takenCourses.add(course);
+                    LOGGER.info("Successfully added course (courseId = "+ course.getCourseId()+ "), to user (userId = " + user.getUserId() + "). Currently assigned to user: "  + userService.findUserByUsername(username).getTakenCourses().size());
+                } else {
+                    throw new AddingCourseException("Course already taken by user --- userId = " + user.getUserId() + " --- courseId = " +course.getCourseId());
+                }
+            } else {
+                throw new AddingCourseException("Teacher id equals student id --- userId = " + user.getUserId() + " --- courseId = " + course.getCourseId());
+            }
+        } else {
+            throw new CourseNotFoundException("No course found with id --- courseId = " + course.getCourseId());
+        }
     }
 }

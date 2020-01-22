@@ -4,6 +4,7 @@
       layout:decorate="~{layout/default}">
     <head lang="en">
         <title th:text="#{success}">Success!</title>
+        <meta http-equiv="refresh" content="3;url=/profile" />
     </head>
     <body layout:fragment="content">
         <br>
@@ -13,13 +14,5 @@
         <div class="row center">
             <h4 th:text="#{redirecting}"></h4>
         </div>
-
-        <script type="text/javascript">
-            (function () {
-                setTimeout(function () {
-                    window.history.back();
-                }, 3000);
-            })();
-        </script>
     </body>
 </html>
