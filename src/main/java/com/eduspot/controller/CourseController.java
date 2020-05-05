@@ -43,11 +43,16 @@ public class CourseController {
         return userService.findUserByUsername(username);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/course/add/{courseId}")
+    @RequestMapping(method = RequestMethod.GET, value = "/course/{courseId}/add")
     public String addCourseToTaken(@PathVariable Long courseId) throws Exception {
-        Course course = courseService.findCourseById(courseId);
-        courseService.addCourseToTaken(course);
+        courseService.addCourseToTaken(courseId);
         return "redirect:/success";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/course/{courseId}/remove")
+    public String removeCourseFromTaken(@PathVariable Long courseId) throws CourseNotFoundException {
+        courseService.removeCourseFromTaken(courseId);
+        return "redirect:/created";
     }
 
     @RequestMapping(value = "/course/new")
@@ -77,6 +82,12 @@ public class CourseController {
         return modelAndView;
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/course/{courseId}/delete")
+    public String deleteCourse(@PathVariable Long courseId) throws CourseNotFoundException {
+        courseService.deleteCourseById(courseId);
+        return "redirect:/created";
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/course/{courseId}/post")
     public String addPost(@PathVariable Long courseId, @ModelAttribute("post") Post post) throws Exception {
         Course course = courseService.findCourseById(courseId);
@@ -95,11 +106,5 @@ public class CourseController {
         User logged = getUser();
         postService.deletePostById(postId, course, logged);
         return "redirect:/success";
-    }
-
-    @RequestMapping(method = RequestMethod.DELETE, value = "/course/{courseId}/delete")
-    public String deleteCourse(@PathVariable Long courseId) throws CourseNotFoundException {
-        courseService.deleteCourseById(courseId);
-        return "redirect:/created";
     }
 }

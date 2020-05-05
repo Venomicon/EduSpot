@@ -1,14 +1,15 @@
 package com.eduspot.controller;
 
-import com.eduspot.domain.CourseDto;
-import com.eduspot.domain.CredentialsDto;
-import com.eduspot.domain.UserDto;
+import com.eduspot.domain.*;
+import com.eduspot.exception.CourseNotFoundException;
 import com.eduspot.exception.UserNotFoundException;
 import com.eduspot.mapper.CourseMapper;
 import com.eduspot.mapper.CredentialsMapper;
+import com.eduspot.mapper.PostMapper;
 import com.eduspot.mapper.UserMapper;
 import com.eduspot.service.CourseService;
 import com.eduspot.service.CredentialsService;
+import com.eduspot.service.PostService;
 import com.eduspot.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +32,21 @@ public class AdminController {
     CredentialsService credentialsService;
     CourseMapper courseMapper;
     CourseService courseService;
+    PostMapper postMapper;
+    PostService postService;
 
     @Autowired
-    public AdminController(UserService userService, UserMapper userMapper, CredentialsMapper credentialsMapper, CredentialsService credentialsService, CourseMapper courseMapper, CourseService courseService) {
+    public AdminController(UserService userService, UserMapper userMapper, CredentialsMapper credentialsMapper,
+                           CredentialsService credentialsService, CourseMapper courseMapper, CourseService courseService,
+                           PostMapper postMapper, PostService postService) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.credentialsMapper = credentialsMapper;
         this.credentialsService = credentialsService;
         this.courseMapper = courseMapper;
         this.courseService = courseService;
+        this.postMapper = postMapper;
+        this.postService = postService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/users")
@@ -57,6 +64,11 @@ public class AdminController {
         return courseMapper.mapToCourseDtoList(courseService.findAllCourses());
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/courses/{courseId}")
+    public CourseDto getCourse(@PathVariable Long courseId) throws CourseNotFoundException {
+        return courseMapper.mapToCourseDto(courseService.findCourseById(courseId));
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/credentials")
     public List<CredentialsDto> getAllCredentials() {
         return credentialsMapper.mapToCredentialsDtoList(credentialsService.findAllCredentials());
@@ -65,5 +77,10 @@ public class AdminController {
     @RequestMapping(method = RequestMethod.GET, value = "/credentials/{userId}")
     public CredentialsDto getUserCredentials(@PathVariable Long userId) throws UserNotFoundException {
         return credentialsMapper.mapToCredentialsDto(userService.findUserById(userId).getCredentials());
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/posts")
+    public List<PostDto> getAllPosts() {
+        return postMapper.mapToPostDtoList(postService.findAllPosts());
     }
 }

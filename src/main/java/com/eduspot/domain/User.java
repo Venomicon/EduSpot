@@ -23,7 +23,11 @@ public class User {
     private Long userId;
 
     @Valid
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
     @JoinColumn(name = "credentials_id", referencedColumnName = "credentials_id")
     private Credentials credentials;
 
@@ -39,7 +43,11 @@ public class User {
     @Past
     private LocalDate birthDate;
 
-    @OneToMany
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Builder.Default
     private List<Course> carriedCourses = new ArrayList<>();
 
@@ -48,7 +56,10 @@ public class User {
     @Builder.Default
     private List<Course> takenCourses = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
     @Builder.Default
     private List<Post> posts = new ArrayList<>();
 }

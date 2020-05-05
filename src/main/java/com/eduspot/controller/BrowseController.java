@@ -24,7 +24,7 @@ public class BrowseController {
     }
 
     @RequestMapping("/browse")
-    public String getAllCourses(SearchForm searchForm) {
+    public String getAllCourses(@ModelAttribute SearchForm searchForm) {
         return "browsePage";
     }
 }

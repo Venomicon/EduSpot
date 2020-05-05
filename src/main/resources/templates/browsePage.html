@@ -12,7 +12,7 @@
         <div class="row">
             <form method="get" th:object="${searchForm}" th:action="@{/search}">
                 <div class="input-field">
-                    <input id="searchInput" type="search" th:placeholder="#{search}" th:field="*{search}">
+                    <input id="searchInput" type="search" th:placeholder="#{search}" th:field="${searchForm.search}">
                     <i class="material-icons">close</i>
                 </div>
             </form>
@@ -31,7 +31,7 @@
                     </form>
                 </ul>
                 <ul class="right">
-                    <form class="center" th:action="@{'/course/add/' + ${course.getCourseId()}}">
+                    <form class="center" th:action="@{'/course/' + ${course.getCourseId()} + '/add'}">
                         <button class="btn orange waves-effect" type="submit" style="margin-top: 10px; margin-right: 10px" th:text="#{addCourse}"></button>
                     </form>
                 </ul>

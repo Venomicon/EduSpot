@@ -23,7 +23,7 @@ public class MailCreatorService {
         this.courseService = courseService;
     }
 
-    public String buildCoursesReminderEmail(User user) throws Exception {
+    public String buildCoursesReminderEmail(User user) {
         List<String> courseTakenTitles = courseService.findAllCoursesTakenByUser(user.getUserId()).stream()
                 .map(Course::getTitle)
                 .collect(Collectors.toList());
@@ -43,7 +43,15 @@ public class MailCreatorService {
         return templateEngine.process("mail/courseReminder", context);
     }
 
-    /*public String buildInformationAfterDeleting(User user) throws Exception {
+    /*public String buildDeletedCourseEmail(User user, Course course) {
+        String message = "One of the courses attended by you has been deleted:";
+        String courseTitle = course.getTitle();
 
+        Context context = new Context();
+        context.setVariable("message", message);
+        context.setVariable("courseTitle", courseTitle);
+        context.setVariable("name", user.getFirstName());
+
+        return templateEngine.process("mail/courseDeleted", context);
     }*/
 }

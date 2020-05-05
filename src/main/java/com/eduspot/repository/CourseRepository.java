@@ -31,4 +31,13 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
 
     @Query(nativeQuery = true)
     List<Course> searchByString(@Param("search") String search);
+
+    @Query(nativeQuery = true)
+    List<Course> getAllTakenByUser(@Param("userId") Long userId);
+
+    @Query(nativeQuery = true)
+    List<Course> getAllCarriedByUser(@Param("userId") Long userId);
+
+    @Query(nativeQuery = true)
+    List<Course> getFinishedCourses();
 }

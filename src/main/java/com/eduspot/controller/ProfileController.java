@@ -27,9 +27,9 @@ public class ProfileController {
 
     @ModelAttribute("loggedUser")
     public User getUser() throws UsernameNotFoundException {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.findUserByUsername(username);
+        return userService.getLoggedUser();
     }
+
 
     @ModelAttribute("yourCarriedCourses")
     public List<Course> getCarriedCourses() {

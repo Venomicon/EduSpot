@@ -30,7 +30,8 @@
                 <li class="collection-item avatar" th:each="course : ${yourCarriedCourses}">
                     <ul class="left">
                         <span class="title red-text" ><b th:text="${course.getTitle()}"></b></span>
-                        <p class="red-text lighten-1" th:text="${course.getDescription()}"></p>
+                        <p class="black-text lighten-1" th:text="${course.timeAndDayToString()}"></p>
+                        <p class="grey-text lighten-1 left-align" th:text="${course.getLevel()}"></p>
                     </ul>
                     <ul class="right">
                         <form class="right" method="get" th:action="@{'/course/' + ${course.getCourseId()}}">
@@ -38,7 +39,7 @@
                         </form>
                     </ul>
                     <ul class="right">
-                        <form class="center">
+                        <form class="center" method="post" th:action="@{'/course/'+ ${course.getCourseId()} + '/delete'}">
                             <button class="btn red waves-effect" type="submit" style="margin-top: 10px; margin-right: 10px" th:text="#{delete}"></button>
                         </form>
                     </ul>
@@ -60,7 +61,8 @@
                 <li class="collection-item avatar" th:each="taken : ${yourTakenCourses}">
                     <ul class="left">
                         <span class="title orange-text" ><b th:text="${taken.getTitle()}"></b></span>
-                        <p class="orange-text lighten-1" th:text="${taken.getDescription()}"></p>
+                        <p class="black-text lighten-1" th:text="${taken.timeAndDayToString()}"></p>
+                        <p class="grey-text lighten-1 left-align" th:text="${taken.getLevel()}"></p>
                     </ul>
                     <ul class="right">
                         <form class="right" method="get" th:action="@{'/course/' + ${taken.getCourseId()}}">
@@ -68,7 +70,7 @@
                         </form>
                     </ul>
                     <ul class="right">
-                        <form class="center">
+                        <form class="center" method="post" th:action="@{'/course/' + ${taken.getCourseId()} + '/remove'}">
                             <button class="btn orange waves-effect" type="submit" style="margin-top: 10px; margin-right: 10px" th:text="#{resign}"></button>
                         </form>
                     </ul>

@@ -22,6 +22,10 @@ public class CredentialsService {
         this.userService = userService;
     }
 
+    public List<Credentials> findAllCredentials() {
+        return credentialsRepository.findAll();
+    }
+
     public Credentials findByUsername(String username) throws UsernameNotFoundException {
         Optional<Credentials> credentials = credentialsRepository.findByUsername(username);
         if (credentials.isPresent()) {
@@ -40,9 +44,4 @@ public class CredentialsService {
             throw new UserNotFoundException("User not found");
         }
     }
-
-    public List<Credentials> findAllCredentials() {
-        return credentialsRepository.findAll();
-    }
-
 }

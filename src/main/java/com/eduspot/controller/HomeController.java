@@ -1,11 +1,7 @@
 package com.eduspot.controller;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class HomeController {
@@ -21,7 +17,7 @@ public class HomeController {
 
     @RequestMapping("/success")
     public String successPage() {
-        return "layout/successe";
+        return "layout/success";
     }
 
     @RequestMapping("/created")

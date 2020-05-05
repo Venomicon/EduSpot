@@ -9,8 +9,12 @@ import java.util.List;
 
 @Service
 public class SearchService {
-    @Autowired
     CourseRepository courseRepository;
+
+    @Autowired
+    public SearchService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
 
     public List<Course> findAllThatContain(String search) {
         return courseRepository.searchByString("%" + search + "%");

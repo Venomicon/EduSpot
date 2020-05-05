@@ -26,11 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Credentials user = credentialsService.findByUsername(username);
-        //return new User(user.getUsername(), "{noop}"+user.getPassword(), user.isEnabled(), true, true, true, user.getAuthorities());
-        if (user != null) {
+        return new User(user.getUsername(), "{noop}"+user.getPassword(), user.isEnabled(), true, true, true, user.getAuthorities());
+        /*if (user != null) {
             return new User(user.getUsername(), "{noop}"+user.getPassword(), user.isEnabled(), true, true, true, user.getAuthorities());
         } else {
             throw new UsernameNotFoundException("No user found for: " + username);
-        }
+        }*/
     }
 }

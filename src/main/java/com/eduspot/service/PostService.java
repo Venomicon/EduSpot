@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 
 @Service
 public class PostService {
@@ -33,6 +34,10 @@ public class PostService {
             }
         }
         return false;
+    }
+
+    public List<Post> findAllPosts() {
+        return postRepository.findAll();
     }
 
     public Post findPostById(Long postId) throws PostNotFoundException{

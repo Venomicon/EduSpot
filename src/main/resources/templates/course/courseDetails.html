@@ -19,9 +19,14 @@
         </p>
         <p class="black-text left-align">
             <span th:text="#{level} + ': ' + ${course.getLevel()}"></span>
-            <span class="right black-text" th:text="#{firsClass} + ': ' + ${course.getStartDate()}"></span>
+            <span class="right black-text" th:text="#{firstClass} + ': ' + ${course.getStartDate()}"></span>
         </p>
-        <p class="black-text left-align" th:text="#{description} + ': ' + ${course.getDescription()}" ></p>
+        <p>
+            <span class="right black-text" th:text="#{lastClass} + ': ' + ${course.getEndOfCourse()}"></span>
+        </p>
+    </div>
+    <div class="row black-text left-align">
+        <span th:text="#{description} + ': ' + ${course.getDescription()}"></span>
     </div>
 
     <!--POSTS-->

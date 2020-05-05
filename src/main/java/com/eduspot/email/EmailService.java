@@ -1,5 +1,6 @@
 package com.eduspot.email;
 
+import com.eduspot.domain.Course;
 import com.eduspot.domain.User;
 import com.eduspot.service.CourseService;
 import com.eduspot.service.UserService;
@@ -20,7 +21,8 @@ import java.util.List;
 @Service
 public class EmailService {
     public static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
-    private final static String SUBJECT = "EduSpot: courses reminder";
+    private final static String REMINDER_SUBJECT = "EduSpot: courses reminder";
+    private final static String DELETE_SUBJECT = "EduSpot: deleted course";
 
     private JavaMailSender javaMailSender;
     private MailCreatorService mailCreatorService;
@@ -33,7 +35,7 @@ public class EmailService {
         this.userService = userService;
     }
 
-    @Scheduled(cron = "0 0 0 ? * MON")
+    @Scheduled(cron = "0 0 0 * * MON")
     public void scheduleReminders() {
         List<User> users = userService.findAllUsers();
         for (User user : users) {
@@ -41,7 +43,7 @@ public class EmailService {
                 try {
                     sendReminderEmail(new Mail(
                             user.getCredentials().getEmail(),
-                            SUBJECT,
+                            REMINDER_SUBJECT,
                             mailCreatorService.buildCoursesReminderEmail(user)
                     ));
                 } catch (Exception e) {
@@ -54,7 +56,7 @@ public class EmailService {
     public void sendReminderEmail(final Mail mail) {
         int mailCounter = 0;
         try {
-            javaMailSender.send(createReminderMessage(mail));
+            javaMailSender.send(createMimeMessage(mail));
             mailCounter += 1;
         } catch (MailException e) {
             LOGGER.error("Failed to process email sending: " + e.getMessage(), e);
@@ -62,24 +64,19 @@ public class EmailService {
         LOGGER.info("Successfully sent " + mailCounter + " reminders.");
     }
 
-    public void sendDeleteInformationEmail(final Mail mail) {
+    /*public void sendDeleteInformationEmail(User user, Course course) {
         try {
-            javaMailSender.send(createDeleteInformationMessage(mail));
+            javaMailSender.send(createMimeMessage(new Mail(
+                    user.getCredentials().getEmail(),
+                    DELETE_SUBJECT,
+                    mailCreatorService.buildDeletedCourseEmail(user, course)
+            )));
         } catch (MailException e) {
             LOGGER.error("Failed to process email sending: " + e.getMessage(), e);
         }
-    }
+    }*/
 
-    private MimeMessagePreparator createReminderMessage(final Mail mail) {
-        return mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setTo(mail.getMailTo());
-            messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(mail.getMessage(), true);
-        };
-    }
-
-    public MimeMessagePreparator createDeleteInformationMessage(final Mail mail) {
+    private MimeMessagePreparator createMimeMessage(final Mail mail) {
         return mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(mail.getMailTo());
